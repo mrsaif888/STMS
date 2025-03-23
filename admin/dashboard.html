@@ -30,22 +30,26 @@
   </div>
   <div class="dashboard-right">
       <div class="admin-section create-task">
-        <h2>Create Task</h2>
-        <form id="create-task-form">
-          <input type="text" placeholder="Task Title" required />
-          <textarea placeholder="Task Description"></textarea>
-          <input type="date" />
-          <select>
-            <option value="high">High Priority</option>
-            <option value="medium">Medium Priority</option>
-            <option value="low">Low Priority</option>
-          </select>
-          <select>
-            <option value="user1">User 1</option>
-          </select>
-          <button type="submit">Create Task</button>
-        </form>
-      </div>
+  <h2>Create Task</h2>
+  <form id="create-task-form">
+    <input type="text" id="task-title" placeholder="Task Title" required>
+    <textarea id="task-desc" placeholder="Task Description"></textarea>
+    <input type="date" id="task-deadline" required>
+    
+    <select id="task-priority" required>
+      <option value="high">High Priority</option>
+      <option value="medium">Medium Priority</option>
+      <option value="low">Low Priority</option>
+    </select>
+
+    <select id="task-assign" required>
+      <!-- Users loaded dynamically here -->
+    </select>
+
+    <button type="submit">Create Task</button>
+  </form>
+</div>
+
   
       <div class="admin-section task-board">
         <h2>Task Board</h2>
@@ -60,6 +64,8 @@
     </div>
 
   <script>
+    // create-user-form
+
     document.getElementById("create-user-form").addEventListener("submit", function (e) {
       e.preventDefault();
     
@@ -85,6 +91,7 @@
         alert("Something went wrong.");
       });
     });
+// assign team lead
 
     document.addEventListener("DOMContentLoaded", () => {
   const assignBtn = document.getElementById("assign-team-lead-btn");
@@ -116,9 +123,53 @@
 });
 
 
+// create task
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  // ✅ Task creation form
+  const taskForm = document.getElementById("create-task-form");
+
+  if (taskForm) {
+    taskForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const data = {
+        title: document.getElementById("task-title").value,
+        description: document.getElementById("task-desc").value,
+        deadline: document.getElementById("task-deadline").value,
+        priority: document.getElementById("task-priority").value,
+        assigned_to: document.getElementById("task-assign").value
+      };
+
+      console.log("Sending task data to backend:", data);
+
+      fetch("../backend/create_task.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: new URLSearchParams(data)
+      })
+      .then(res => res.json())
+      .then(result => {
+        alert(result.message);
+        console.log("Task Created:", result);
+      })
+      .catch(err => {
+        console.error("Task creation failed:", err);
+        alert("Error creating task.");
+      });
+    });
+  } else {
+    console.warn("❗ Form not found in DOM.");
+  }
+});
+
+
 
 function loadUsersForTeamLead() {
-  fetch("../backend/get_users.php")
+    fetch("../backend/get_users_for_teamlead.php")
     .then(res => res.json())
     .then(data => {
       console.log("Fetched users:", data.users); // ✅ log the array
@@ -152,7 +203,35 @@ function loadUsersForTeamLead() {
       console.error("Failed to load users:", err);
     });
 }
+function loadUsersForTaskAssign() {
+    fetch("../backend/get_users_for_task.php")
+    .then(res => res.json())
+    .then(data => {
+      const dropdown = document.getElementById("task-assign");
+      dropdown.innerHTML = "";
 
+      if (data.users.length === 0) {
+        const option = document.createElement("option");
+        option.textContent = "No users found";
+        option.disabled = true;
+        dropdown.appendChild(option);
+        return;
+      }
+
+      data.users.forEach(user => {
+        const option = document.createElement("option");
+        option.value = user.id;
+        option.textContent = `${user.username} (${user.role})`;
+        dropdown.appendChild(option);
+      });
+    })
+    .catch(err => {
+      console.error("Failed to load users for task assign:", err);
+    });
+}
+window.addEventListener("DOMContentLoaded", () => {
+  loadUsersForTaskAssign(); // 👈 Load team leads + users into dropdown
+});
     </script>
       </body>
 </html>
