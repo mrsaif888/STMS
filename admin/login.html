@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Login</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+  
+</head>
+<body>
+    <div class="login-admin">
+  <div class="login-box">
+    <h2>Admin Login</h2>
+    <form id="admin-login-form">
+      <input type="text" id="admin-username" placeholder="Username" required />
+      <input type="password" id="admin-password" placeholder="Password" required />
+      <button type="submit">Login</button>
+      <p class="error-message" id="login-error"></p>
+    </form>
+  </div>
+</div>
+</body>
+<script>
+    document.getElementById("admin-login-form").addEventListener("submit", function (e) {
+      e.preventDefault();
+    
+      const username = document.getElementById("admin-username").value;
+      const password = document.getElementById("admin-password").value;
+    
+      fetch("login.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success) {
+            // ✅ Redirect to dashboard if login success
+            window.location.href = "dashboard.html";
+          } else {
+            document.getElementById("login-error").textContent = data.message;
+          }
+        })
+        .catch((err) => {
+          console.error("Login Error:", err);
+        });
+    });
+    </script>
+    
+</html>

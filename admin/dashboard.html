@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+  <body>
+    <div class="admin-dashboard">
+      <h1>Admin Dashboard</h1>
+      <div class="dashboard-grid">
+        <div class="dashboard-left">
+      <div class="admin-section create-user">
+        <h2>Create New User</h2>
+        <form id="create-user-form">
+          <input type="text" placeholder="Username" required />
+          <input type="password" placeholder="Password" required />
+          <select>
+            <option value="user">User</option>
+          </select>
+          <button type="submit">Create User</button>
+        </form>
+      </div>
+  
+      <div class="admin-section assign-team-lead">
+        <h2>Assign Team Lead</h2>
+        <select id="team-lead-selection"></select>
+        <button>Assign as Team Lead</button>
+      </div>
+  </div>
+  <div class="dashboard-right">
+      <div class="admin-section create-task">
+        <h2>Create Task</h2>
+        <form id="create-task-form">
+          <input type="text" placeholder="Task Title" required />
+          <textarea placeholder="Task Description"></textarea>
+          <input type="date" />
+          <select>
+            <option value="high">High Priority</option>
+            <option value="medium">Medium Priority</option>
+            <option value="low">Low Priority</option>
+          </select>
+          <select>
+            <option value="user1">User 1</option>
+          </select>
+          <button type="submit">Create Task</button>
+        </form>
+      </div>
+  
+      <div class="admin-section task-board">
+        <h2>Task Board</h2>
+        <div class="kanban-board">
+          <div class="kanban-column" id="todo"><h3>To Do</h3></div>
+          <div class="kanban-column" id="in-progress"><h3>In Progress</h3></div>
+          <div class="kanban-column" id="completed"><h3>Completed</h3></div>
+        </div>
+      </div>
+    </div>
+    </div>
+    </div>
+  </body>
+  
+
+</body>
+</html>
