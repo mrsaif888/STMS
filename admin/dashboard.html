@@ -13,11 +13,11 @@
       <div class="admin-section create-user">
         <h2>Create New User</h2>
         <form id="create-user-form">
-          <input type="text" placeholder="Username" required />
-          <input type="password" placeholder="Password" required />
-          <select>
-            <option value="user">User</option>
-          </select>
+            <input type="text" id="new-username" />
+            <input type="password" id="new-password" />
+            <select id="new-role">
+              <option value="user">User</option>
+            </select>
           <button type="submit">Create User</button>
         </form>
       </div>
@@ -25,7 +25,7 @@
       <div class="admin-section assign-team-lead">
         <h2>Assign Team Lead</h2>
         <select id="team-lead-selection"></select>
-        <button>Assign as Team Lead</button>
+        <button id="assign-team-lead-btn">Assign as Team Lead</button>
       </div>
   </div>
   <div class="dashboard-right">
@@ -58,8 +58,101 @@
     </div>
     </div>
     </div>
-  </body>
-  
 
-</body>
+  <script>
+    document.getElementById("create-user-form").addEventListener("submit", function (e) {
+      e.preventDefault();
+    
+      const username = document.getElementById("new-username").value;
+      const password = document.getElementById("new-password").value;
+      const role = document.getElementById("new-role").value;
+    
+      fetch("../backend/create_user.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&role=${encodeURIComponent(role)}`
+      })
+      .then(res => res.json())
+      .then(data => {
+        alert(data.message);
+        if (data.success) {
+          document.getElementById("create-user-form").reset();
+          loadUsersForTeamLead(); // Optional: reload team lead dropdown
+        }
+      })
+      .catch(err => {
+        console.error("User creation error:", err);
+        alert("Something went wrong.");
+      });
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+  const assignBtn = document.getElementById("assign-team-lead-btn");
+  if (assignBtn) {
+    assignBtn.addEventListener("click", function () {
+      const selectedUserId = document.getElementById("team-lead-selection").value;
+
+      fetch("../backend/assign_team_lead.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: `user_id=${encodeURIComponent(selectedUserId)}`
+      })
+        .then(res => res.json())
+        .then(data => {
+          alert(data.message);
+          if (data.success) loadUsersForTeamLead();
+        })
+        .catch(err => {
+          console.error("Assign failed:", err);
+        });
+    });
+  } else {
+    console.warn("⚠️ Button not found in DOM.");
+  }
+
+  loadUsersForTeamLead();
+});
+
+
+
+function loadUsersForTeamLead() {
+  fetch("../backend/get_users.php")
+    .then(res => res.json())
+    .then(data => {
+      console.log("Fetched users:", data.users); // ✅ log the array
+
+      const dropdown = document.getElementById("team-lead-selection");
+      console.log("Dropdown element:", dropdown); // ✅ check if it exists
+
+      if (!dropdown) {
+        alert("Dropdown not found. Check the ID!");
+        return;
+      }
+
+      dropdown.innerHTML = "";
+
+      if (data.users.length === 0) {
+        const option = document.createElement("option");
+        option.textContent = "No users available";
+        option.disabled = true;
+        dropdown.appendChild(option);
+        return;
+      }
+
+      data.users.forEach(user => {
+        const option = document.createElement("option");
+        option.value = user.id;
+        option.textContent = user.username;
+        dropdown.appendChild(option);
+      });
+    })
+    .catch(err => {
+      console.error("Failed to load users:", err);
+    });
+}
+
+    </script>
+      </body>
 </html>
