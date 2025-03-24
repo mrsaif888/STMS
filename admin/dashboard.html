@@ -51,14 +51,26 @@
 </div>
 
   
-      <div class="admin-section task-board">
-        <h2>Task Board</h2>
-        <div class="kanban-board">
-          <div class="kanban-column" id="todo"><h3>To Do</h3></div>
-          <div class="kanban-column" id="in-progress"><h3>In Progress</h3></div>
-          <div class="kanban-column" id="completed"><h3>Completed</h3></div>
-        </div>
-      </div>
+     <div class="admin-section task-board">
+  <h2>Task Board</h2>
+  <div class="kanban-board">
+    <div class="kanban-column" id="todo-column" ondrop="drop(event, 'todo')" ondragover="allowDrop(event)">
+      <h3>To Do</h3>
+      <div class="task-list" id="todo-tasks"></div>
+    </div>
+    <div class="kanban-column" id="inprogress-column" ondrop="drop(event, 'inprogress')" ondragover="allowDrop(event)">
+      <h3>In Progress</h3>
+      <div class="task-list" id="inprogress-tasks"></div>
+    </div>
+    <div class="kanban-column" id="completed-column" ondrop="drop(event, 'completed')" ondragover="allowDrop(event)">
+      <h3>Completed</h3>
+      <div class="task-list" id="completed-tasks"></div>
+    </div>
+  </div>
+  
+</div>
+<div id="notification" class="toast"></div>
+
     </div>
     </div>
     </div>
@@ -116,7 +128,7 @@
         });
     });
   } else {
-    console.warn("⚠️ Button not found in DOM.");
+    console.warn(" Button not found in DOM.");
   }
 
   loadUsersForTeamLead();
@@ -127,7 +139,7 @@
 
 
 document.addEventListener("DOMContentLoaded", () => {
-  // ✅ Task creation form
+  //  Task creation form
   const taskForm = document.getElementById("create-task-form");
 
   if (taskForm) {
@@ -162,7 +174,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
   } else {
-    console.warn("❗ Form not found in DOM.");
+    console.warn(" Form not found in DOM.");
   }
 });
 
@@ -172,10 +184,9 @@ function loadUsersForTeamLead() {
     fetch("../backend/get_users_for_teamlead.php")
     .then(res => res.json())
     .then(data => {
-      console.log("Fetched users:", data.users); // ✅ log the array
-
+      console.log("Fetched users:", data.users); 
       const dropdown = document.getElementById("team-lead-selection");
-      console.log("Dropdown element:", dropdown); // ✅ check if it exists
+      console.log("Dropdown element:", dropdown); 
 
       if (!dropdown) {
         alert("Dropdown not found. Check the ID!");
@@ -230,8 +241,118 @@ function loadUsersForTaskAssign() {
     });
 }
 window.addEventListener("DOMContentLoaded", () => {
-  loadUsersForTaskAssign(); // 👈 Load team leads + users into dropdown
+  loadUsersForTaskAssign(); 
 });
+function loadTasksToBoard() {
+  fetch("../backend/get_tasks.php")
+    .then(res => res.json())
+    .then(data => {
+      const todo = document.getElementById("todo-tasks");
+      const inProgress = document.getElementById("inprogress-tasks");
+      const completed = document.getElementById("completed-tasks");
+
+      todo.innerHTML = "";
+      inProgress.innerHTML = "";
+      completed.innerHTML = "";
+
+      const priorityOrder = { high: 1, medium: 2, low: 3 };
+
+      // Group by status
+      const grouped = { todo: [], inprogress: [], completed: [] };
+      data.tasks.forEach(task => {
+  const normalizedStatus = task.status.toLowerCase().replace(/\s/g, '');
+
+  if (grouped[normalizedStatus]) {
+    grouped[normalizedStatus].push(task);
+  } else {
+    console.warn(`Unknown status '${task.status}' on task ID ${task.id}`);
+  }
+});
+
+
+      // Sort each group by priority
+      Object.keys(grouped).forEach(status => {
+        grouped[status].sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+      });
+
+      // Render tasks
+      grouped.todo.forEach(task => renderTaskCard(task, todo));
+      grouped.inprogress.forEach(task => renderTaskCard(task, inProgress));
+      grouped.completed.forEach(task => renderTaskCard(task, completed));
+    })
+    .catch(err => {
+      console.error("Failed to load tasks:", err);
+    });
+}
+function renderTaskCard(task, container) {
+  const taskCard = document.createElement("div");
+  taskCard.className = "task-card";
+  taskCard.draggable = true;
+  taskCard.id = `task-${task.id}`;
+
+  taskCard.addEventListener("dragstart", (e) => {
+    e.dataTransfer.setData("text/plain", task.id);
+  });
+
+  taskCard.innerHTML = `
+    <strong>${task.title}</strong>
+    <p>${task.description}</p>
+    <p>Priority: ${task.priority}</p>
+    <p>Due: ${task.deadline}</p>
+    <p><strong>Assigned to: ${task.assigned_username} (${task.assigned_role})</p>
+  `;
+
+  container.appendChild(taskCard);
+}
+function allowDrop(e) {
+  e.preventDefault();
+}
+
+function drop(e, newStatus) {
+  e.preventDefault();
+  const taskId = e.dataTransfer.getData("text/plain");
+  updateTaskStatus(taskId, newStatus);
+}
+function updateTaskStatus(taskId, newStatus) {
+  fetch("../backend/updateTaskStatus.php", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    body: new URLSearchParams({
+      task_id: taskId,
+      status: newStatus
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      loadTasksToBoard(); // refresh board
+      notifyUser(`Task #${taskId} moved to ${newStatus.toUpperCase()}`);
+    } else {
+      alert("Failed to update task.");
+    }
+  })
+  .catch(err => console.error("Status update error:", err));
+}
+function notifyUser(message) {
+  const toast = document.getElementById("notification");
+
+  if (!toast) return; // Prevent error if toast div is missing
+
+  toast.innerText = message;
+  toast.style.display = "block";
+
+  setTimeout(() => {
+    toast.style.display = "none";
+  }, 3000);
+}
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  loadTasksToBoard();
+});
+
     </script>
       </body>
 </html>

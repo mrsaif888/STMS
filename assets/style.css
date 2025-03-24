@@ -196,6 +196,20 @@ body {
   color: #555;
 }
 
+.toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #28a745;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 6px;
+  display: none;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+  font-weight: bold;
+  z-index: 9999;
+}
+
 @media (max-width: 768px) {
   .task-board .kanban-board {
     flex-direction: column;
