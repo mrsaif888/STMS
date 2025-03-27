@@ -1,50 +1,54 @@
 <?php
-// Enable full error display
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
+session_start();
 header('Content-Type: application/json');
 include "db.php";
-session_start(); // ✅ Start session
 
-// Confirm method is POST
+// Enable error reporting for development
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+error_log("Session: " . print_r($_SESSION, true));
+// Check method
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode(["success" => false, "message" => "Invalid request method."]);
     exit;
 }
+if (!isset($_SESSION['user_id'])) {
+    echo json_encode(["success" => false, "message" => "Session not set. Please log in."]);
+    exit;
+}
 
-// Get DB connection
+// Auth check
+if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role'], ['admin', 'team-lead'])) {
+    error_log("SESSION DEBUG: " . print_r($_SESSION, true)); // Add this line
+    echo json_encode(["success" => false, "message" => "Unauthorized access."]);
+    exit;
+}
+
+
 $conn = Database::getInstance()->getConnection();
 
-// Grab inputs from POST
+// Collect inputs
 $title = $_POST['title'] ?? '';
 $desc = $_POST['description'] ?? '';
 $deadline = $_POST['deadline'] ?? '';
 $priority = $_POST['priority'] ?? '';
-$assigned_to = $_POST['assigned_to'] ?? '';
-$created_by = $_SESSION['admin_id'] ?? null; // ✅ Use session ID
+$assigned_to = $_POST['assigned_to'] ?? null;
+$created_by = $_SESSION['user_id'];
+$status = 'todo';
 
-// Check for missing data
-if (!$title || !$deadline || !$priority || !$assigned_to || !$created_by) {
-    echo json_encode(["success" => false, "message" => "Missing required fields or session expired."]);
+// Validate
+if (!$title || !$deadline || !$priority || !$assigned_to) {
+    echo json_encode(["success" => false, "message" => "Missing required fields."]);
     exit;
 }
 
-// Prepare insert
-$stmt = $conn->prepare("INSERT INTO tasks (title, description, deadline, priority, assigned_to, created_by) VALUES (?, ?, ?, ?, ?, ?)");
+// Insert task
+$stmt = $conn->prepare("INSERT INTO tasks (title, description, deadline, priority, assigned_to, created_by, status) VALUES (?, ?, ?, ?, ?, ?, ?)");
+$stmt->bind_param("sssssis", $title, $desc, $deadline, $priority, $assigned_to, $created_by, $status);
 
-if (!$stmt) {
-    echo json_encode(["success" => false, "message" => "Prepare failed: " . $conn->error]);
-    exit;
-}
-
-$stmt->bind_param("ssssii", $title, $desc, $deadline, $priority, $assigned_to, $created_by);
-
-// Execute insert
 if ($stmt->execute()) {
     echo json_encode(["success" => true, "message" => "Task created successfully."]);
 } else {
-    echo json_encode(["success" => false, "message" => "Execution failed: " . $stmt->error]);
+    echo json_encode(["success" => false, "message" => "Failed to create task: " . $stmt->error]);
 }
 ?>
