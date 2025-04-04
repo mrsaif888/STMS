@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../assets/style.css">
+    <title>Document</title>
+</head>
+<body>
+    <div class="container">
+  <div class="main-header">
+    <h1>User Dashboard</h1>
+    <button id="signout-btn" class="signout-button">Sign Out</button>
+  </div>
+
+  <!-- Task Board (No create form for users) -->
+  <div class="task-board admin-section">
+    <h2>Your Tasks</h2>
+    <div class="kanban-board">
+        <div class="kanban-column" ondrop="drop(event, 'todo')" ondragover="allowDrop(event)">
+            <h3>To Do</h3>
+            <div class="task-list" id="todo-tasks"></div>
+          </div>
+          <div class="kanban-column" ondrop="drop(event, 'inprogress')" ondragover="allowDrop(event)">
+            <h3>In Progress</h3>
+            <div class="task-list" id="inprogress-tasks"></div>
+          </div>
+          <div class="kanban-column" ondrop="drop(event, 'completed')" ondragover="allowDrop(event)">
+            <h3>Completed</h3>
+            <div class="task-list" id="completed-tasks"></div>
+          </div>
+          
+    </div>
+  </div>
+
+  <!-- Notification Toast -->
+  <div id="notification" class="toast"></div>
+</div>
+
+      
+      
+<script src="user.js"></script>
+
+</body>
+</html>
