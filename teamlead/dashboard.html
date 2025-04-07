@@ -7,76 +7,82 @@
   <script defer src="teamlead.js"></script>
 </head>
 <body>
-  <div class="container">
-    <div class="main-header">
-    <h1>Team Lead Dashboard</h1>
-    <button id="signout-btn" class="signout-button">Sign Out</button>
-</div>
-    <!-- Create Task Section -->
-    <div class="admin-section">
-      <h2>Create Task</h2>
-      <form id="create-task-form">
-        <input type="text" id="task-title" placeholder="Task Title" required />
-        <textarea id="task-desc" placeholder="Task Description" required></textarea>
-        <input type="date" id="task-deadline" required />
-
-        <select id="task-priority" required>
-          <option value="">Select Priority</option>
-          <option value="high">High</option>
-          <option value="medium">Medium</option>
-          <option value="low">Low</option>
-        </select>
-
-        <select id="task-assign" required>
-          <option value="">Assign to</option>
-        </select>
-
-        <button type="submit">Create Task</button>
-      </form>
-    </div>
-
-    <!-- Task Board -->
-    <div class="task-board admin-section">
-      <h2>Task Board</h2>
-      <div class="kanban-board">
-        <div class="kanban-column" ondrop="drop(event, 'todo')" ondragover="allowDrop(event)">
-          <h3>To Do</h3>
-          <div class="task-list" id="todo-tasks"></div>
-        </div>
-        <div class="kanban-column" ondrop="drop(event, 'inprogress')" ondragover="allowDrop(event)">
-          <h3>In Progress</h3>
-          <div class="task-list" id="inprogress-tasks"></div>
-        </div>
-        <div class="kanban-column" ondrop="drop(event, 'completed')" ondragover="allowDrop(event)">
-          <h3>Completed</h3>
-          <div class="task-list" id="completed-tasks"></div>
-        </div>
-      </div>
-    </div>
-    <div id="edit-modal" class="modal" style="display: none;">
-        <div class="modal-content">
-          <span class="close-btn" onclick="closeEditModal()">&times;</span>
-          <h2>Edit Task</h2>
-          <form id="edit-task-form">
-            <input type="hidden" id="edit-task-id" />
-            <input type="text" id="edit-task-title" placeholder="Title" />
-            <textarea id="edit-task-desc" placeholder="Description"></textarea>
-            <input type="date" id="edit-task-deadline" />
-            <select id="edit-task-priority">
+  <body>
+    <div class="dashboard-wrapper">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <h2 class="logo">STMS</h2>
+        <ul class="nav-tabs">
+          <li onclick="showTab('create-task-section')" class="active">Create Task</li>
+          <li onclick="showTab('task-board-section')">Task Board</li>
+          <li onclick="signOut()">Sign Out</li>
+        </ul>
+      </aside>
+  
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Create Task -->
+        <section id="create-task-section" class="tab-section active-tab admin-section">
+          <h2>Create Task</h2>
+          <form id="create-task-form">
+            <input type="text" id="task-title" placeholder="Task Title" required />
+            <textarea id="task-desc" placeholder="Task Description" required></textarea>
+            <input type="date" id="task-deadline" required />
+            <select id="task-priority" required>
+              <option value="">Select Priority</option>
               <option value="high">High</option>
               <option value="medium">Medium</option>
               <option value="low">Low</option>
             </select>
-            <select id="edit-task-assign"></select>
-            <button type="submit">Save Changes</button>
+            <select id="task-assign" required>
+              <option value="">Assign to</option>
+            </select>
+            <button type="submit">Create Task</button>
           </form>
-        </div>
-      </div>
-      
-  </div>
+        </section>
+  
+        <!-- Task Board -->
+        <section id="task-board-section" class="tab-section admin-section">
+          <h2>Task Board</h2>
+          <div class="kanban-board">
+            <div class="kanban-column" ondrop="drop(event, 'todo')" ondragover="allowDrop(event)">
+              <h3>To Do</h3>
+              <div class="task-list" id="todo-tasks"></div>
+            </div>
+            <div class="kanban-column" ondrop="drop(event, 'inprogress')" ondragover="allowDrop(event)">
+              <h3>In Progress</h3>
+              <div class="task-list" id="inprogress-tasks"></div>
+            </div>
+            <div class="kanban-column" ondrop="drop(event, 'completed')" ondragover="allowDrop(event)">
+              <h3>Completed</h3>
+              <div class="task-list" id="completed-tasks"></div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  
+    <div id="notification" class="toast"></div>
+  
+    <!-- Tab Navigation Script -->
+    <script>
+      function showTab(tabId) {
+        document.querySelectorAll(".tab-section").forEach(section => {
+          section.classList.remove("active-tab");
+        });
+        document.querySelectorAll(".nav-tabs li").forEach(tab => {
+          tab.classList.remove("active");
+        });
+        document.getElementById(tabId).classList.add("active-tab");
+        event.target.classList.add("active");
+      }
+  
+      function signOut() {
+        window.location.href = "../index.html";
+      }
+    </script>
  
   
-  <div id="notification" class="toast"></div>
   
 </body>
 </html>

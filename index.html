@@ -1,21 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Smart Task Management System</title>
-    <link rel="stylesheet" href="assets/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login</title>
+  <link rel="stylesheet" href="./assets/style.css" />
 </head>
 <body>
-    <div class="landing-page">
-    <div class="container">
-        <h1>Smart Task Management System</h1>
-        <p>Select your role to log in</p>
-        <div class="role-buttons">
-          <a href="admin/login.html"><button>Admin Login</button></a>
-          <a href="teamlead/login.html"><button>Team Lead Login</button></a>
-          <a href="user/login.html"><button>User Login</button></a>
-        </div>
-      </div>
+  <h1 class="login-page-heading">Smart Task Management System</h1>
+  <div class="login-admin">
+    <div class="login-box">
+      <h2>Login</h2>
+      <form id="universal-login-form">
+        <input type="text" id="username" placeholder="Username" required />
+        <input type="password" id="password" placeholder="Password" required />
+
+        <!-- 🔽 Role Selection -->
+        <select id="role" required>
+          <option value="">Select Role</option>
+          <option value="admin">Admin</option>
+          <option value="team-lead">Team Lead</option>
+          <option value="user">User</option>
+        </select>
+
+        <button type="submit">Login</button>
+        <p class="error-message" id="login-error"></p>
+      </form>
     </div>
+  </div>
+
+  <script>
+   document.getElementById("universal-login-form").addEventListener("submit", function (e) {
+  e.preventDefault();
+
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+  const role = document.getElementById("role").value;
+
+  fetch("./admin/login.php", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&role=${encodeURIComponent(role)}`
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success && data.user) {
+        const user = data.user;
+        localStorage.setItem("currentUser", JSON.stringify(user));
+
+        if (user.role === "admin") {
+          window.location.href = "./admin/dashboard.html";
+        } else if (user.role === "team-lead") {
+          window.location.href = "./teamlead/dashboard.html";
+        } else if (user.role === "user") {
+          window.location.href = "./user/dashboard.html";
+        }
+      } else {
+        document.getElementById("login-error").textContent = data.message || "Login failed.";
+      }
+    })
+    .catch(err => {
+      console.error("Login Error:", err);
+      document.getElementById("login-error").textContent = "Something went wrong.";
+    });
+});
+
+  </script>
 </body>
 </html>

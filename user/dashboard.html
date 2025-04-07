@@ -7,39 +7,61 @@
     <title>Document</title>
 </head>
 <body>
-    <div class="container">
-  <div class="main-header">
-    <h1>User Dashboard</h1>
-    <button id="signout-btn" class="signout-button">Sign Out</button>
-  </div>
-
-  <!-- Task Board (No create form for users) -->
-  <div class="task-board admin-section">
-    <h2>Your Tasks</h2>
-    <div class="kanban-board">
-        <div class="kanban-column" ondrop="drop(event, 'todo')" ondragover="allowDrop(event)">
-            <h3>To Do</h3>
-            <div class="task-list" id="todo-tasks"></div>
+  <body>
+    <div class="dashboard-wrapper">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <h2 class="logo">STMS</h2>
+        <ul class="nav-tabs">
+          <li onclick="showTab('task-board-section')" class="active">My Tasks</li>
+          <li onclick="signOut()">Sign Out</li>
+        </ul>
+      </aside>
+  
+      <!-- Main Content -->
+      <main class="main-content">
+        <section id="task-board-section" class="tab-section active-tab admin-section">
+          <h2>Your Tasks</h2>
+          <div class="kanban-board">
+            <div class="kanban-column" ondrop="drop(event, 'todo')" ondragover="allowDrop(event)">
+              <h3>To Do</h3>
+              <div class="task-list" id="todo-tasks"></div>
+            </div>
+            <div class="kanban-column" ondrop="drop(event, 'inprogress')" ondragover="allowDrop(event)">
+              <h3>In Progress</h3>
+              <div class="task-list" id="inprogress-tasks"></div>
+            </div>
+            <div class="kanban-column" ondrop="drop(event, 'completed')" ondragover="allowDrop(event)">
+              <h3>Completed</h3>
+              <div class="task-list" id="completed-tasks"></div>
+            </div>
           </div>
-          <div class="kanban-column" ondrop="drop(event, 'inprogress')" ondragover="allowDrop(event)">
-            <h3>In Progress</h3>
-            <div class="task-list" id="inprogress-tasks"></div>
-          </div>
-          <div class="kanban-column" ondrop="drop(event, 'completed')" ondragover="allowDrop(event)">
-            <h3>Completed</h3>
-            <div class="task-list" id="completed-tasks"></div>
-          </div>
-          
+        </section>
+      </main>
     </div>
-  </div>
-
-  <!-- Notification Toast -->
-  <div id="notification" class="toast"></div>
-</div>
-
+  
+    <div id="notification" class="toast"></div>
+  
+    <!-- Tab Switch Logic -->
+    <script>
+      function showTab(tabId) {
+        document.querySelectorAll(".tab-section").forEach(section => {
+          section.classList.remove("active-tab");
+        });
+        document.querySelectorAll(".nav-tabs li").forEach(tab => {
+          tab.classList.remove("active");
+        });
+        document.getElementById(tabId).classList.add("active-tab");
+        event.target.classList.add("active");
+      }
+  
+      function signOut() {
+        window.location.href = "../index.html";
+      }
+    </script>
+  
+    <script src="user.js"></script>
+  </body>
+  
       
-      
-<script src="user.js"></script>
-
-</body>
 </html>

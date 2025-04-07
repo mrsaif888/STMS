@@ -6,75 +6,100 @@
   <title>Admin Dashboard</title>
   <link rel="stylesheet" href="../assets/style.css" />
   <body>
-    <div class="admin-dashboard">
-      <h1>Admin Dashboard</h1>
-      <div class="dashboard-grid">
-        <div class="dashboard-left">
-      <div class="admin-section create-user">
-        <h2>Create New User</h2>
-        <form id="create-user-form">
-            <input type="text" id="new-username" />
-            <input type="password" id="new-password" />
-            <select id="new-role">
-              <option value="user">User</option>
-            </select>
-          <button type="submit">Create User</button>
-        </form>
-      </div>
-  
-      <div class="admin-section assign-team-lead">
-        <h2>Assign Team Lead</h2>
-        <select id="team-lead-selection"></select>
-        <button id="assign-team-lead-btn">Assign as Team Lead</button>
-      </div>
-  </div>
-  <div class="dashboard-right">
-      <div class="admin-section create-task">
-  <h2>Create Task</h2>
-  <form id="create-task-form">
-    <input type="text" id="task-title" placeholder="Task Title" required>
-    <textarea id="task-desc" placeholder="Task Description"></textarea>
-    <input type="date" id="task-deadline" required>
+    <body>
+      <div class="dashboard-wrapper">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+          <h2 class="logo">STMS</h2>
+          <ul class="nav-tabs">
+            <li onclick="showTab('create-user-section')" class="active">Create User</li>
+            <li onclick="showTab('assign-team-lead-section')">Assign Team Lead</li>
+            <li onclick="showTab('create-task-section')">Create Task</li>
+            <li onclick="showTab('task-board-section')">Task Board</li>
+            <li onclick="signOut()">Sign Out</li>
+          </ul>
+        </aside>
     
-    <select id="task-priority" required>
-      <option value="high">High Priority</option>
-      <option value="medium">Medium Priority</option>
-      <option value="low">Low Priority</option>
-    </select>
-
-    <select id="task-assign" required>
-      <!-- Users loaded dynamically here -->
-    </select>
-
-    <button type="submit">Create Task</button>
-  </form>
-</div>
-
-  
-     <div class="admin-section task-board">
-  <h2>Task Board</h2>
-  <div class="kanban-board">
-    <div class="kanban-column" id="todo-column" ondrop="drop(event, 'todo')" ondragover="allowDrop(event)">
-      <h3>To Do</h3>
-      <div class="task-list" id="todo-tasks"></div>
-    </div>
-    <div class="kanban-column" id="inprogress-column" ondrop="drop(event, 'inprogress')" ondragover="allowDrop(event)">
-      <h3>In Progress</h3>
-      <div class="task-list" id="inprogress-tasks"></div>
-    </div>
-    <div class="kanban-column" id="completed-column" ondrop="drop(event, 'completed')" ondragover="allowDrop(event)">
-      <h3>Completed</h3>
-      <div class="task-list" id="completed-tasks"></div>
-    </div>
-  </div>
-  
-</div>
-<div id="notification" class="toast"></div>
-
-    </div>
-    </div>
-    </div>
-
+        <!-- Main Content Area -->
+        <main class="main-content">
+          <!-- Create User -->
+          <section id="create-user-section" class="tab-section active-tab admin-section">
+            <h2>Create New User</h2>
+            <form id="create-user-form">
+              <input type="text" id="new-username" />
+              <input type="password" id="new-password" />
+              <select id="new-role">
+                <option value="user">User</option>
+              </select>
+              <button type="submit">Create User</button>
+            </form>
+          </section>
+    
+          <!-- Assign Team Lead -->
+          <section id="assign-team-lead-section" class="tab-section admin-section">
+            <h2>Assign Team Lead</h2>
+            <select id="team-lead-selection"></select>
+            <button id="assign-team-lead-btn">Assign as Team Lead</button>
+          </section>
+    
+          <!-- Create Task -->
+          <section id="create-task-section" class="tab-section admin-section">
+            <h2>Create Task</h2>
+            <form id="create-task-form">
+              <input type="text" id="task-title" placeholder="Task Title" required />
+              <textarea id="task-desc" placeholder="Task Description"></textarea>
+              <input type="date" id="task-deadline" required />
+              <select id="task-priority" required>
+                <option value="high">High Priority</option>
+                <option value="medium">Medium Priority</option>
+                <option value="low">Low Priority</option>
+              </select>
+              <select id="task-assign" required></select>
+              <button type="submit">Create Task</button>
+            </form>
+          </section>
+    
+          <!-- Task Board -->
+          <section id="task-board-section" class="tab-section admin-section task-board">
+            <h2>Task Board</h2>
+            <div class="kanban-board">
+              <div class="kanban-column" id="todo-column" ondrop="drop(event, 'todo')" ondragover="allowDrop(event)">
+                <h3>To Do</h3>
+                <div class="task-list" id="todo-tasks"></div>
+              </div>
+              <div class="kanban-column" id="inprogress-column" ondrop="drop(event, 'inprogress')" ondragover="allowDrop(event)">
+                <h3>In Progress</h3>
+                <div class="task-list" id="inprogress-tasks"></div>
+              </div>
+              <div class="kanban-column" id="completed-column" ondrop="drop(event, 'completed')" ondragover="allowDrop(event)">
+                <h3>Completed</h3>
+                <div class="task-list" id="completed-tasks"></div>
+              </div>
+            </div>
+            <div id="notification" class="toast"></div>
+          </section>
+        </main>
+      </div>
+    
+      <!-- JS for tab switching -->
+      <script>
+        function showTab(tabId) {
+          document.querySelectorAll(".tab-section").forEach(section => {
+            section.classList.remove("active-tab");
+          });
+          document.querySelectorAll(".nav-tabs li").forEach(tab => {
+            tab.classList.remove("active");
+          });
+          document.getElementById(tabId).classList.add("active-tab");
+          event.target.classList.add("active");
+        }
+    
+        function signOut() {
+          window.location.href = "../index.html";
+        }
+      </script>
+    
+    
   <script>
     // create-user-form
 
