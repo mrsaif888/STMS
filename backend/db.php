@@ -5,7 +5,7 @@ class Database {
 
     private $host = "localhost";
     private $user = "root";
-    private $pass = "";
+    private $pass = "harman@12345";
     private $dbname = "stms_project";
 
     private function __construct() {
