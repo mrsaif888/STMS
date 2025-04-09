@@ -140,3 +140,143 @@ http://localhost/STMS/index.html
 ##  License
 
 This project is licensed under the [MIT License](LICENSE).
+
+# Testing
+
+## Authentication Test Cases
+
+Login with valid credentials
+
+→ Enter correct username, password, and role. The user should be successfully logged in and redirected to their respective dashboard.
+
+Login with incorrect password
+
+→ Enter a valid username but the wrong password. The system should display an “Incorrect password” message.
+
+Login with non-existent username
+
+→ Use a username that is not in the database. The system should display a “User not found” message.
+
+Login with mismatched role
+
+→ Choose a different role than the one stored in the database. Access should be denied with an appropriate message.
+
+Session persistence after login
+
+→ Refresh the page after login. The session should remain active and keep the user logged in.
+
+Session expiry on logout
+
+→ After clicking the logout button, the user should be redirected to the login screen and their session terminated.
+
+## Admin Module Test Cases
+
+Create a new user with valid inputs
+
+→ Submit the create user form with a valid username, password, and role. The user should be saved to the database.
+
+Create user with missing fields
+
+→ Leave one or more fields blank. The system should show a validation error and prevent submission.
+
+Assign a user as Team Lead
+
+→ Select a user from the dropdown and assign them as a team lead. Their role in the database should be updated.
+
+Reassign the same user as Team Lead
+
+→ Attempt to assign a team lead who is already in that role. The system should either prevent it or handle it gracefully.
+
+## Task Management Test Cases
+
+Create a new task with all fields filled
+
+→ Submit the task creation form with valid inputs. The task should be stored and appear in the “To Do” column.
+
+Create a task with missing priority or title
+
+→ Submit the form without selecting a priority or leaving the title empty. An error should appear.
+
+Assign task to a user
+
+→ Select a user from the dropdown. The task should be linked to that user and displayed in their dashboard.
+
+Tasks should appear sorted by priority
+
+→ When multiple tasks are created, high priority tasks should appear at the top of the list.
+
+Drag and drop task to another status
+
+→ Move a task from “To Do” to “In Progress” or “Completed”. The status should update in both the UI and the database.
+
+Edit task
+
+→ Open the edit modal, modify task details, and save. Changes should reflect immediately on the board.
+
+Delete task
+
+→ Remove a task from the dashboard. It should be deleted from the database and disappear from the UI.
+
+## User Dashboard Test Cases
+
+User views only their assigned tasks
+
+→ Login as a user. Only the tasks assigned to them should be visible.
+
+User updates task status
+
+→ Drag a task to another status column. The change should be saved and visible on reload.
+
+Unauthorized page access
+
+→ Try accessing the admin or team lead pages directly via URL as a user. Access should be blocked with an error or redirection.
+
+## UI/UX Behavior Test Cases
+
+Responsive layout on different screen sizes
+
+→ Resize the browser window or use mobile. Layout should adapt correctly.
+
+Toast notification display
+
+→ Trigger a task update or drag/drop action. A notification should appear temporarily.
+
+Edit modal behavior
+
+→ Click the edit icon and confirm that the modal opens. Click the close button or 
+outside the modal to close it.
+
+Hover and button effects
+
+→ Hover over buttons and links. Transitions and hover states should be consistent.
+
+## Backend and Database Test Cases
+
+Task saved to the database
+
+→ After creating a task, verify its entry in the tasks table.
+
+Foreign key integrity
+
+→ Try assigning a task to a user ID that doesn’t exist. The database should reject it.
+
+Username uniqueness
+
+→ Attempt to create a user with a duplicate username. The system should prevent it and display an error.
+SQL injection protection
+
+→ Try submitting SQL commands as input. The system should sanitize inputs and prevent any injection.
+
+## Optional Advanced/Future Test Cases
+
+Undo/Redo task updates
+
+→ If implemented, allow users to revert task status changes.
+
+Load testing
+
+→ Simulate many users interacting with the app. The system should remain stable and responsive.
+
+Email or external notifications
+
+→ Test whether email notifications or external hooks trigger on task creation or updates (if applicable)
